@@ -11,6 +11,7 @@ def register_commands(group):
     group.add_command(add_list)
     group.add_command(clone_keyvault)
     group.add_command(list_secrets)
+    group.add_command(list_secret_names)
     
 @click.command()
 def hello():
@@ -67,7 +68,7 @@ def clone_keyvault(keyvault_name,source_keyvault_name):
        
 @click.command()
 @click.option('--keyvault_name', '-kv')
-def list_secrets(keyvault_name):
+def list_secret_names(keyvault_name):
     secrets_list = []
     credential = AzureCliCredential()
     keyvault_name = keyvault_name
@@ -80,5 +81,26 @@ def list_secrets(keyvault_name):
         secrets_list.append(secret_property.name)
     return secrets_list
 
+@click.command()
+@click.option('--keyvault_name', '-kv')
+def list_secrets(keyvault_name):
+    name_secret_dict = {}
+    secrets_list = []
 
+
+    credential = AzureCliCredential()
+    KVUri = f"https://{keyvault_name}.vault.azure.net"
+    kv_client = SecretClient(vault_url=KVUri, credential=credential)
+
+    secret_properties = kv_client.list_properties_of_secrets()
+
+    for secret_property in secret_properties:
+        secrets_list.append(secret_property.name)
+
+    for secret_name in secrets_list:
+        secret = kv_client.get_secret(secret_name)
+        name_secret_dict[secret.name] = [secret.value]
+
+    for key in name_secret_dict.keys():
+        print(key + ";" + name_secret_dict[key][0])
 
