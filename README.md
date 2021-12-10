@@ -8,13 +8,21 @@ Options:
 
 Commands:
   add-list
+  
   add-single
+  
   clean-keyvault
+  
   clone-keyvault
+  
   hello
+  
   list-secret-names
+  
   list-secrets
+  
   remove-list
+  
   remove-single
 
 
